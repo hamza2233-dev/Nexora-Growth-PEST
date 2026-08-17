@@ -99,27 +99,16 @@
         let autoPingTimer = null;
         let lastExtractedDid = '';
 
-        // Success Web Audio Synth Beep (No external mp3 files needed)
-        const playSuccessSound = () => {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
-
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.4);
-            } catch (e) {
-                // AudioContext blocked or not supported
+        // Web Speech API Voice Notification ("Success")
+        const speakSuccess = () => {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech so it triggers cleanly right away
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance("Success");
+                utterance.rate = 1.1; // Slightly upbeat speed
+                utterance.pitch = 1.2; // Slightly higher energetic pitch
+                window.speechSynthesis.speak(utterance);
             }
         };
 
@@ -156,15 +145,20 @@
                     const jsonRes = JSON.parse(resultText);
                     responseContent.textContent = JSON.stringify(jsonRes, null, 2);
                     
-                    // Look for valid phone number and strip the leading '+' if present
                     let rawNum = jsonRes.phoneNumber || jsonRes.phoneNumberNoPlus;
                     if (rawNum) {
-                        lastExtractedDid = rawNum.replace(/^\+/, ''); // Strips leading '+'
+                        // Ensures format starts with '1' (e.g., 12136910067)
+                        let cleanNum = rawNum.replace(/^\+/, '');
+                        if (!cleanNum.startsWith('1')) {
+                            cleanNum = '1' + cleanNum;
+                        }
+
+                        lastExtractedDid = cleanNum;
                         didText.textContent = lastExtractedDid;
                         didContainer.classList.remove('hidden');
                         
-                        // Play success chime sound
-                        playSuccessSound();
+                        // Speak out "Success" using browser voice synthesis
+                        speakSuccess();
                     } else {
                         didContainer.classList.add('hidden');
                     }
