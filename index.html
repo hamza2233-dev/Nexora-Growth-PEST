@@ -3,102 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexora Growth - Pest Control Ping Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
-        }
-        h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #777;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        #response-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 13px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            display: none;
-        }
-    </style>
+    <title>Ringba Lead Ping</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-center items-center p-4">
 
-<div class="container">
-    <h2>Nexora Growth</h2>
-    <div class="subtitle">Pest Control Campaign</div>
-    
-    <form id="pingForm">
-        <div class="form-group">
-            <label for="caller_id">Caller ID (Phone Number):</label>
-            <input type="text" id="caller_id" name="caller_id" placeholder="Paste number (e.g. 5551234567)" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="zip_code">Zip Code:</label>
-            <input type="text" id="zip_code" name="zip_code" placeholder="Enter 5-digit Zip Code" required maxlength="5">
+    <div class="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-center relative">
+            <div class="absolute top-3 right-3 flex items-center space-x-1.5 bg-black/20 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-medium text-emerald-200 border border-emerald-400/30">
+                <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                <span id="status-text">Ready</span>
+            </div>
+            <h1 class="text-xl font-bold tracking-wide text-white uppercase"><i class="fa-solid fa-tower-broadcast mr-2"></i>Ringba Ping</h1>
+            <p class="text-xs text-emerald-100 mt-1">Real-time Lead Routing Dispatcher</p>
         </div>
 
-        <button type="submit" id="submitBtn">Send Ping</button>
-    </form>
-    
-    <div id="response-box"></div>
-</div>
+        <!-- Form Body -->
+        <form id="pingForm" class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    <i class="fa-solid fa-phone-volume mr-1.5 text-emerald-600"></i> Caller ID (CID)
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 font-mono text-sm">+1</span>
+                    <input type="tel" id="cid" name="cid" required placeholder="5551234567" 
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition font-mono text-sm">
+                </div>
+            </div>
 
-<script src="ping.js"></script>
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    <i class="fa-solid fa-map-pin mr-1.5 text-emerald-600"></i> Zip Code
+                </label>
+                <input type="text" id="zip_code" name="zip_code" required placeholder="55555" maxlength="5"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition font-mono text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    <i class="fa-solid fa-stopwatch mr-1.5 text-emerald-600"></i> Auto Ping Loop Interval
+                </label>
+                <select id="auto_interval" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm">
+                    <option value="0">Manual / Off</option>
+                    <option value="5">Every 5 Seconds</option>
+                    <option value="10" selected>Every 10 Seconds</option>
+                </select>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition duration-200 flex items-center justify-center space-x-2 text-sm">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span id="btnText">Send Ping</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Response Console -->
+        <div id="responseBox" class="hidden mx-6 mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 text-slate-400 font-mono">
+                <span>Response Log</span>
+                <span id="responseTimestamp">--:--:--</span>
+            </div>
+            
+            <!-- DID Display & Copy Action -->
+            <div id="didContainer" class="hidden flex items-center justify-between bg-emerald-50 border border-emerald-100 p-2.5 rounded-lg">
+                <div class="font-mono text-emerald-900 font-medium">
+                    <span class="text-slate-500 text-[10px] block uppercase">Target DID</span>
+                    <span id="didText" class="text-sm">--</span>
+                </div>
+                <button type="button" id="copyDidBtn" onclick="copyDid()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-md transition flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-regular fa-copy"></i>
+                    <span id="copyBtnText">Copy DID</span>
+                </button>
+            </div>
+
+            <div id="responseContent" class="overflow-x-auto whitespace-pre-wrap break-all font-mono text-slate-600"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('pingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const statusText = document.getElementById('status-text');
+        const responseBox = document.getElementById('responseBox');
+        const responseContent = document.getElementById('responseContent');
+        const responseTimestamp = document.getElementById('responseTimestamp');
+        const autoIntervalSelect = document.getElementById('auto_interval');
+        const didContainer = document.getElementById('didContainer');
+        const didText = document.getElementById('didText');
+        const copyBtnText = document.getElementById('copyBtnText');
+
+        let autoPingTimer = null;
+        let lastExtractedDid = '';
+
+        const executePing = async () => {
+            let rawPhone = document.getElementById('cid').value.trim();
+            let zipCodeVal = document.getElementById('zip_code').value.trim();
+            if (!rawPhone || !zipCodeVal) return;
+
+            let formattedPhone = rawPhone.startsWith('+1') ? rawPhone : '+1' + rawPhone.replace(/^\+/, '');
+
+            statusText.textContent = "Sending...";
+            statusText.className = "text-xs font-medium text-amber-600";
+            btnText.textContent = "Processing...";
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/ringba-ping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        cid: formattedPhone,
+                        zip_code: zipCodeVal
+                    })
+                });
+
+                const resultText = await response.text();
+                
+                responseBox.classList.remove('hidden');
+                responseTimestamp.textContent = new Date().toLocaleTimeString();
+                responseContent.textContent = resultText;
+                
+                // Extract potential phone/DID numbers from response text
+                const phoneMatch = resultText.match(/(?:\+?1)?\d{10}/);
+                if (phoneMatch) {
+                    lastExtractedDid = phoneMatch[0];
+                    didText.textContent = lastExtractedDid;
+                    didContainer.classList.remove('hidden');
+                } else {
+                    didContainer.classList.add('hidden');
+                }
+
+                statusText.textContent = "Online";
+                statusText.className = "text-xs font-medium text-emerald-600";
+            } catch (error) {
+                responseBox.classList.remove('hidden');
+                responseTimestamp.textContent = new Date().toLocaleTimeString();
+                responseContent.textContent = "Error: " + error.message;
+                didContainer.classList.add('hidden');
+                
+                statusText.textContent = "Error";
+                statusText.className = "text-xs font-medium text-rose-600";
+            } finally {
+                btnText.textContent = "Send Ping";
+                submitBtn.disabled = false;
+            }
+        };
+
+        const copyDid = () => {
+            if (!lastExtractedDid) return;
+            navigator.clipboard.writeText(lastExtractedDid).then(() => {
+                copyBtnText.textContent = "Copied!";
+                setTimeout(() => {
+                    copyBtnText.textContent = "Copy DID";
+                }, 2000);
+            });
+        };
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            executePing();
+        });
+
+        autoIntervalSelect.addEventListener('change', (e) => {
+            if (autoPingTimer) {
+                clearInterval(autoPingTimer);
+                autoPingTimer = null;
+            }
+
+            const intervalSeconds = parseInt(e.target.value);
+            if (intervalSeconds > 0) {
+                autoPingTimer = setInterval(() => {
+                    const phoneVal = document.getElementById('cid').value.trim();
+                    if (phoneVal) {
+                        executePing();
+                    }
+                }, intervalSeconds * 1000);
+            }
+        });
+    </script>
 </body>
 </html>
