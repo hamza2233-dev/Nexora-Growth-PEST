@@ -1,15 +1,23 @@
 document.getElementById('pingForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    let rawCallerId = document.getElementById('caller_id').value.trim();
     const zipCodeInput = document.getElementById('zip_code').value.trim();
     const responseMessage = document.getElementById('response-message');
     const submitBtn = document.getElementById('submitBtn');
 
-    if (!zipCodeInput) {
+    if (!rawCallerId || !zipCodeInput) {
         responseMessage.style.color = 'red';
-        responseMessage.textContent = 'Please enter a valid zip code.';
+        responseMessage.textContent = 'Please fill out all fields.';
         return;
     }
+
+    // Automatically ensure +1 format (removes any existing leading + or 1 if pasted strangely, then adds +1)
+    let cleanedDigits = rawCallerId.replace(/\D/g, '');
+    if (cleanedDigits.length === 11 && cleanedDigits.startsWith('1')) {
+        cleanedDigits = cleanedDigits.substring(1);
+    }
+    const formattedCallerId = `+1${cleanedDigits}`;
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
@@ -19,15 +27,13 @@ document.getElementById('pingForm').addEventListener('submit', async function (e
     
     const payload = {
         "CID": "14061571951",
+        "caller_id": formattedCallerId,
         "zip_code": zipCodeInput,
         "exposeCallerId": "yes"
     };
 
     try {
-        // Using 'no-cors' prevents browser CORS blocking. 
-        // Note: In 'no-cors' mode, the response status is opaque (type: 'opaque'), 
-        // meaning you won't be able to read JSON body responses directly in JS, 
-        // but the data will successfully reach Ringba.
+        // Uses 'no-cors' mode to ensure browser requests reach Ringba without blocking.
         await fetch(endpoint, {
             method: 'POST',
             mode: 'no-cors',
