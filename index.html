@@ -70,12 +70,12 @@
             <!-- DID Display & Copy Action -->
             <div id="didContainer" class="hidden flex items-center justify-between bg-emerald-50 border border-emerald-100 p-2.5 rounded-lg">
                 <div class="font-mono text-emerald-900 font-medium">
-                    <span class="text-slate-500 text-[10px] block uppercase">Target DID</span>
+                    <span class="text-slate-500 text-[10px] block uppercase">Target Phone Number</span>
                     <span id="didText" class="text-sm">--</span>
                 </div>
                 <button type="button" id="copyDidBtn" onclick="copyDid()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-md transition flex items-center space-x-1.5 shadow-sm">
                     <i class="fa-regular fa-copy"></i>
-                    <span id="copyBtnText">Copy DID</span>
+                    <span id="copyBtnText">Copy Number</span>
                 </button>
             </div>
 
@@ -127,15 +127,22 @@
                 
                 responseBox.classList.remove('hidden');
                 responseTimestamp.textContent = new Date().toLocaleTimeString();
-                responseContent.textContent = resultText;
                 
-                // Extract potential phone/DID numbers from response text
-                const phoneMatch = resultText.match(/(?:\+?1)?\d{10}/);
-                if (phoneMatch) {
-                    lastExtractedDid = phoneMatch[0];
-                    didText.textContent = lastExtractedDid;
-                    didContainer.classList.remove('hidden');
-                } else {
+                // Pretty-print JSON response if valid, otherwise raw text
+                try {
+                    const jsonRes = JSON.parse(resultText);
+                    responseContent.textContent = JSON.stringify(jsonRes, null, 2);
+                    
+                    // Directly target the "phoneNumber" key from Ringba's JSON response
+                    if (jsonRes.phoneNumber) {
+                        lastExtractedDid = jsonRes.phoneNumber;
+                        didText.textContent = lastExtractedDid;
+                        didContainer.classList.remove('hidden');
+                    } else {
+                        didContainer.classList.add('hidden');
+                    }
+                } catch (e) {
+                    responseContent.textContent = resultText;
                     didContainer.classList.add('hidden');
                 }
 
@@ -160,7 +167,7 @@
             navigator.clipboard.writeText(lastExtractedDid).then(() => {
                 copyBtnText.textContent = "Copied!";
                 setTimeout(() => {
-                    copyBtnText.textContent = "Copy DID";
+                    copyBtnText.textContent = "Copy Number";
                 }, 2000);
             });
         };
