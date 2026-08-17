@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ringba Lead Ping</title>
+    <title>Nexora Growth - Pest Control Ping</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -16,8 +16,8 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
                 <span id="status-text">Ready</span>
             </div>
-            <h1 class="text-xl font-bold tracking-wide text-white uppercase"><i class="fa-solid fa-tower-broadcast mr-2"></i>Ringba Ping</h1>
-            <p class="text-xs text-emerald-100 mt-1">Real-time Lead Routing Dispatcher</p>
+            <h1 class="text-xl font-bold tracking-wide text-white uppercase"><i class="fa-solid fa-bug mr-2"></i>Nexora Growth</h1>
+            <p class="text-xs text-emerald-100 mt-1">Pest Control Real-time Dispatcher</p>
         </div>
 
         <!-- Form Body -->
@@ -99,6 +99,30 @@
         let autoPingTimer = null;
         let lastExtractedDid = '';
 
+        // Success Web Audio Synth Beep (No external mp3 files needed)
+        const playSuccessSound = () => {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
+
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.4);
+            } catch (e) {
+                // AudioContext blocked or not supported
+            }
+        };
+
         const executePing = async () => {
             let rawPhone = document.getElementById('cid').value.trim();
             let zipCodeVal = document.getElementById('zip_code').value.trim();
@@ -128,16 +152,19 @@
                 responseBox.classList.remove('hidden');
                 responseTimestamp.textContent = new Date().toLocaleTimeString();
                 
-                // Pretty-print JSON response if valid, otherwise raw text
                 try {
                     const jsonRes = JSON.parse(resultText);
                     responseContent.textContent = JSON.stringify(jsonRes, null, 2);
                     
-                    // Directly target the "phoneNumber" key from Ringba's JSON response
-                    if (jsonRes.phoneNumber) {
-                        lastExtractedDid = jsonRes.phoneNumber;
+                    // Look for valid phone number and strip the leading '+' if present
+                    let rawNum = jsonRes.phoneNumber || jsonRes.phoneNumberNoPlus;
+                    if (rawNum) {
+                        lastExtractedDid = rawNum.replace(/^\+/, ''); // Strips leading '+'
                         didText.textContent = lastExtractedDid;
                         didContainer.classList.remove('hidden');
+                        
+                        // Play success chime sound
+                        playSuccessSound();
                     } else {
                         didContainer.classList.add('hidden');
                     }
