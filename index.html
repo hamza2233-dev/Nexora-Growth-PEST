@@ -99,7 +99,6 @@
         let autoPingTimer = null;
         let lastExtractedDid = '';
 
-        // Helper to fully stop auto pinging and reset select menu
         const stopAutoPing = () => {
             if (autoPingTimer) {
                 clearInterval(autoPingTimer);
@@ -108,7 +107,6 @@
             autoIntervalSelect.value = "0";
         };
 
-        // Web Speech API Voice Notification ("Success")
         const speakSuccess = () => {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -152,21 +150,20 @@
                     const jsonRes = JSON.parse(resultText);
                     responseContent.textContent = JSON.stringify(jsonRes, null, 2);
                     
-                    let rawNum = jsonRes.phoneNumber || jsonRes.phoneNumberNoPlus;
+                    // Prefer phoneNumberNoPlus or strip both '+' and leading '1' to give exact 10-digit clean number
+                    let rawNum = jsonRes.phoneNumberNoPlus || jsonRes.phoneNumber;
                     if (rawNum) {
+                        // Remove '+' and then remove leading '1' if it starts with '1' and is 11 digits long
                         let cleanNum = rawNum.replace(/^\+/, '');
-                        if (!cleanNum.startsWith('1')) {
-                            cleanNum = '1' + cleanNum;
+                        if (cleanNum.startsWith('1') && cleanNum.length === 11) {
+                            cleanNum = cleanNum.substring(1);
                         }
 
                         lastExtractedDid = cleanNum;
                         didText.textContent = lastExtractedDid;
                         didContainer.classList.remove('hidden');
                         
-                        // Stop the auto ping loop immediately upon successful match
                         stopAutoPing();
-
-                        // Speak out "Success"
                         speakSuccess();
                     } else {
                         didContainer.classList.add('hidden');
